@@ -1,61 +1,92 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include "queue.h"
+#include <stdio.h>
 
-Queue* createQueue(int max)
+typedef struct _QueuedProcess 
+{
+    Process* process;
+    struct _QueuedProcess *prev;
+} QueuedProcess;
+
+typedef struct _Queue 
+{
+    QueuedProcess* head;
+    QueuedProcess* tail;
+    int size;
+    int max;
+} Queue;
+
+Queue* createQueue(int max);
+void freeQueue(Queue *queue);
+int enqueue(Queue *queue, Process *item);
+Process* dequeue(Queue *queue);
+int isEmpty(Queue* queue);
+
+Queue* createQueue(int max) 
 {
     Queue *queue = (Queue*) malloc(sizeof (Queue));
-
-    int* items = (int*) malloc(sizeof(int) * max);
-    int rear = -1;
-    int front = -1;
-
+    
     queue->max = max;
-    queue->items = items;
-    queue->rear = rear;
-    queue->front = front;
+    queue->size = 0;
+    queue->head = NULL;
+    queue->tail = NULL;
+
+    return queue;
 }
 
-void freeQueue(Queue* queue)
+void freeQueue(Queue* queue) 
 {
-    free(queue->items);
+    QueuedProcess* item;
+
+    while (!isEmpty(queue)) 
+    {
+        item = dequeue(queue);
+        free(item);
+    }
+
     free(queue);
 }
 
-void enqueue(Queue* queue, int item)
+int enqueue(Queue* queue, Process* process) 
 {
-    if(queue->rear == queue->max - 1)
+    if (queue->size >= queue->max)
+        return 0;
+
+    QueuedProcess* item = (QueuedProcess*) malloc(sizeof(QueuedProcess));
+
+    item->process = process;
+    item->prev = NULL;
+
+    if (queue->size == 0) 
     {
-        printf("Queue Overflow");
-        return;
+        queue->head = item;
+        queue->tail = item;
+    } 
+    else 
+    {
+        queue->tail->prev = item;
+        queue->tail = item;
     }
-    
-    if(queue->front == - 1)
-        queue->front = 0;
-            
-    queue->rear++;
-    queue->items[queue->rear] = item;
+
+    queue->size++;
+
+    return 1;
 }
 
-int dequeue(Queue* queue)
+Process* dequeue(Queue* queue) 
 {
-    if(queue->front == - 1 || queue->front > queue->rear)
-    {
-        printf("Queue Underflow");
-        return -1;
-    }
-    
-    int element = queue->items[queue->front];
-    queue->front++;
-    return element;
+    QueuedProcess* item = queue->head;
+    queue->head = (queue->head)->prev;
+    queue->size--;
+    return item->process;
 }
 
-int main()
+int isEmpty(Queue* queue) 
 {
-    Queue* q = createQueue(10);
+    if (queue == NULL) 
+        return 0;
+
+    if (queue->size == 0) 
+        return 1;
     
-    enqueue(q, 0);
-    dequeue(q);
-    freeQueue(q);
-    
+    return 0;
 }
