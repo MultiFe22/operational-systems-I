@@ -4,7 +4,10 @@
 #include "process.h"
 #include "queue.h"
 
-#define MAX_PROCESSES 10
+#define MAX_PROCESSES 4
+#define MAX_ARRIVAL_TIME 10
+#define MAX_BURST_TIME 10
+#define MAX_IO_TIME 10
 
 #define STATUS_NotArrived 0
 #define STATUS_InQueue 1

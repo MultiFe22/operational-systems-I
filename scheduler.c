@@ -68,9 +68,9 @@ Process* createProcess()
     p->pid = ++count;
      p->status = STATUS_NotArrived;
 
-    p->arrivalTime = rand() % 100;
-    p->burstTime = rand() % 20 + 1;
-    p->ioTime = rand() % 20 + 1;
+    p->arrivalTime = rand() % MAX_ARRIVAL_TIME;
+    p->burstTime = rand() % MAX_BURST_TIME + 1;
+    p->ioTime = rand() % MAX_IO_TIME + 1;
     p->enterIOTime = rand() % 100 > 50 ? rand() % p->burstTime : -1;
 
     p->ioType = rand() % 3;
