@@ -2,6 +2,7 @@
 #include "process.h"
 #include <stdlib.h>
 #include <time.h>
+#include "queue.h"
 
 int processorClock = 0;
 const int MAX_PROCESSES = 10;
@@ -36,7 +37,11 @@ int main(int argc, char const *argv[])
         printf("%d %d\n", processes[i]->pid, processes[i]->arrivalTime);
     }
 
-    //p
+    Queue* readyQueue = createQueue(MAX_PROCESSES);
+    enqueue(readyQueue, processes[0]);
+    Process* currentProcess = dequeue(readyQueue);
+    printf("%d\n", currentProcess->pid);
+
     /* code */
     return 0;
 }
@@ -87,12 +92,12 @@ Process* checkNextArrival(Process* processes[])
     return NULL;
 }
 
-void onClockTick(Process* processes[])
-{
-    Process* process = checkNextArrival(processes);
-    while(process != NULL)
-    {
-        handleArrival(process);
-        process = checkNextArrival(processes);
-    }
-}
+// void onClockTick(Process* processes[])
+// {
+//     Process* process = checkNextArrival(processes);
+//     while(process != NULL)
+//     {
+//         //handleArrival(process);
+//         process = checkNextArrival(processes);
+//     }
+// }

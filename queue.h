@@ -1,7 +1,7 @@
 #ifndef QUEUE_H
 
     #define QUEUE_H
-
+    #include "process.h"
     typedef struct _QueuedProcess 
     {
         Process* process;
