@@ -39,6 +39,8 @@ int main(int argc, char const *argv[])
 
     Queue* readyQueue = createQueue(MAX_PROCESSES);
     enqueue(readyQueue, processes[0]);
+    enqueue(readyQueue, processes[1]);
+    dequeue(readyQueue);
     Process* currentProcess = dequeue(readyQueue);
     printf("%d\n", currentProcess->pid);
 

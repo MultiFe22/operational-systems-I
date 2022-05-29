@@ -21,5 +21,6 @@
     int enqueue(Queue *queue, Process *item);
     Process* dequeue(Queue *queue);
     int isEmpty(Queue* queue);
+    //QueuedProcess* dequeueInternal(Queue* queue) ;
 
 #endif
