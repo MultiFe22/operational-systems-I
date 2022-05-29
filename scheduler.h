@@ -25,6 +25,7 @@ Queue* ioQueue;
 Process* processes[MAX_PROCESSES];
 Process* currentCPUProcess;
 Process* currentIOProcess;
+int elapsedSlice = 0;
 
 Process* createProcess();
 int generatePid();

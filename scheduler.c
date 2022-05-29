@@ -115,7 +115,8 @@ void onClockTick()
 
     tickProcesses();
 
-    processorClock++;    
+    processorClock++;
+    elapsedSlice++;
 }
 
 void handleProcessArrival()
@@ -156,6 +157,7 @@ void handleNext()
         if(currentCPUProcess != NULL)
         {
             currentCPUProcess->status = STATUS_InProcessing;
+            elapsedSlice = 0;
             printf("Process %d is now being processed\n", currentCPUProcess->pid);
         }
     }
@@ -179,7 +181,7 @@ void handleSlice()
     if(processorClock == 0)
         return;
 
-    if(processorClock % sliceTime == 0)
+    if(elapsedSlice >= sliceTime)
     {
         printf("Process %d was interrupted\n", currentCPUProcess->pid);
         printf("Process %d was enqueued with low priority\n", currentCPUProcess->pid);

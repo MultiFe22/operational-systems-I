@@ -18,8 +18,6 @@ Queue* createQueue(int max)
 
 void freeQueue(Queue* queue) 
 {
-    //QueuedProcess* item;
-
     while (!isEmpty(queue)) 
     {
         dequeue(queue);
@@ -53,14 +51,6 @@ int enqueue(Queue* queue, Process* process)
 
     return 1;
 }
-
-// QueuedProcess* dequeueInternal(Queue* queue) 
-// {
-//     QueuedProcess* item = queue->head;
-//     queue->head = (queue->head)->prev;
-//     queue->size--;
-//     return item;
-// }
 
 Process* peek(Queue* queue) 
 {
