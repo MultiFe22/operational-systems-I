@@ -1,5 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "queue.h"
+#include "process.h"
+
 
 Queue* createQueue(int max) 
 {
@@ -15,12 +18,11 @@ Queue* createQueue(int max)
 
 void freeQueue(Queue* queue) 
 {
-    QueuedProcess* item;
+    //QueuedProcess* item;
 
     while (!isEmpty(queue)) 
     {
-        item = dequeue(queue);
-        free(item);
+        dequeue(queue);
     }
 
     free(queue);
@@ -52,12 +54,26 @@ int enqueue(Queue* queue, Process* process)
     return 1;
 }
 
+// QueuedProcess* dequeueInternal(Queue* queue) 
+// {
+//     QueuedProcess* item = queue->head;
+//     queue->head = (queue->head)->prev;
+//     queue->size--;
+//     return item;
+// }
+
 Process* dequeue(Queue* queue) 
 {
+    if (isEmpty(queue)){
+        printf("Queue is empty\n");
+        return NULL;
+    }
     QueuedProcess* item = queue->head;
     queue->head = (queue->head)->prev;
     queue->size--;
-    return item->process;
+    Process* process = item->process;
+    free(item);
+    return process;
 }
 
 int isEmpty(Queue* queue) 

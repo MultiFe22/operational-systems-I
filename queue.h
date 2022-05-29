@@ -1,7 +1,7 @@
 #ifndef QUEUE_H
 
     #define QUEUE_H
-
+    #include "process.h"
     typedef struct _QueuedProcess 
     {
         Process* process;
@@ -21,5 +21,6 @@
     int enqueue(Queue *queue, Process *item);
     Process* dequeue(Queue *queue);
     int isEmpty(Queue* queue);
+    //QueuedProcess* dequeueInternal(Queue* queue) ;
 
 #endif
