@@ -7,7 +7,10 @@
 int processorClock = 0;
 const int MAX_PROCESSES = 10;
 int numProcesses = 0;
-
+int sliceTime = 4;
+Queue* highPriorityQueue;
+Queue* lowPriorityQueue;
+Queue* ioQueue;
 
 Process* createProcess();
 int generatePid();
@@ -24,6 +27,10 @@ int main(int argc, char const *argv[])
 {
     srand(time(NULL));
     Process* processes[MAX_PROCESSES];
+    highPriorityQueue = createQueue(MAX_PROCESSES);
+    lowPriorityQueue = createQueue(MAX_PROCESSES);
+    ioQueue = createQueue(MAX_PROCESSES);
+
     for (int i = 0; i < MAX_PROCESSES; i++)
     {
         processes[i] = createProcess();
@@ -37,12 +44,7 @@ int main(int argc, char const *argv[])
         printf("%d %d\n", processes[i]->pid, processes[i]->arrivalTime);
     }
 
-    Queue* readyQueue = createQueue(MAX_PROCESSES);
-    enqueue(readyQueue, processes[0]);
-    enqueue(readyQueue, processes[1]);
-    dequeue(readyQueue);
-    Process* currentProcess = dequeue(readyQueue);
-    printf("%d\n", currentProcess->pid);
+    
 
     /* code */
     return 0;
@@ -94,12 +96,14 @@ Process* checkNextArrival(Process* processes[])
     return NULL;
 }
 
+
 // void onClockTick(Process* processes[])
 // {
 //     Process* process = checkNextArrival(processes);
 //     while(process != NULL)
 //     {
-//         //handleArrival(process);
+//         enqueue(highPriorityQueue, process);
 //         process = checkNextArrival(processes);
 //     }
+    
 // }
