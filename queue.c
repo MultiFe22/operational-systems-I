@@ -62,9 +62,21 @@ int enqueue(Queue* queue, Process* process)
 //     return item;
 // }
 
+Process* peek(Queue* queue) 
+{
+    if (isEmpty(queue))
+    {
+        printf("Queue is empty\n");
+        return NULL;
+    }
+
+    return queue->head->process;
+}
+
 Process* dequeue(Queue* queue) 
 {
-    if (isEmpty(queue)){
+    if (isEmpty(queue))
+    {
         printf("Queue is empty\n");
         return NULL;
     }
@@ -85,4 +97,14 @@ int isEmpty(Queue* queue)
         return 1;
     
     return 0;
+}
+
+void foreach(Queue* queue, void (*func)(Process*))
+{
+    Process* process = peek(queue);
+    while(process != NULL)
+    {
+        (*func)(process);
+        process = peek(queue);
+    }
 }
