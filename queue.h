@@ -2,17 +2,24 @@
 
     #define QUEUE_H
 
-    typedef struct _Queue
+    typedef struct _QueuedProcess 
     {
+        Process* process;
+        struct _QueuedProcess *prev;
+    } QueuedProcess;
+
+    typedef struct _Queue 
+    {
+        QueuedProcess* head;
+        QueuedProcess* tail;
+        int size;
         int max;
-        int* items;
-        int rear;
-        int front;
     } Queue;
 
-    Queue* create_queue(int max);
-    void free_queue(Queue* queue);
-    void enqueue(Queue* queue, int item);
-    int dequeue(Queue* queue);
+    Queue* createQueue(int max);
+    void freeQueue(Queue *queue);
+    int enqueue(Queue *queue, Process *item);
+    Process* dequeue(Queue *queue);
+    int isEmpty(Queue* queue);
 
 #endif
