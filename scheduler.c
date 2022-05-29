@@ -69,9 +69,10 @@ Process* createProcess()
      p->status = STATUS_NotArrived;
 
     p->arrivalTime = rand() % 100;
-    p->burstTime = rand() % 20;
-    p->ioTime = rand() % 20;
-    p->enterIOTime = rand() % p->burstTime;
+    p->burstTime = rand() % 20 + 1;
+    p->ioTime = rand() % 20 + 1;
+    p->enterIOTime = rand() % 100 > 50 ? rand() % p->burstTime : -1;
+
     p->ioType = rand() % 3;
 
     p->remainingBurstTime = p->burstTime;
@@ -122,7 +123,8 @@ void handleProcessArrival()
     Process* process = checkNextArrival(processes);
     while(process != NULL)
     {
-        printf("Process %d Arrived\n", process->pid);
+        printf("Process %d arrived\n", process->pid);
+        printf("Process %d was enqueued with high priority\n", process->pid);
         enqueue(highPriorityQueue, process);
         process->status = STATUS_InQueue;
         arrivedProcesses++;
@@ -180,6 +182,7 @@ void handleSlice()
     if(processorClock % sliceTime == 0)
     {
         printf("Process %d was interrupted\n", currentCPUProcess->pid);
+        printf("Process %d was enqueued with low priority\n", process->pid);
         enqueue(lowPriorityQueue, currentCPUProcess);
         currentCPUProcess->status = STATUS_InQueue;
         currentCPUProcess = NULL;
@@ -224,14 +227,17 @@ void tickProcess(Process* process)
                 switch(process->ioType)
                 {
                     case 0: //disco
+                        printf("Process %d was enqueued with low priority\n", process->pid);
                         enqueue(lowPriorityQueue, process);
                     break;
 
                     case 1: //fita
+                        printf("Process %d was enqueued with high priority\n", process->pid);
                         enqueue(highPriorityQueue, process);
                     break;
 
                     case 2: //impressora
+                        printf("Process %d was enqueued with high priority\n", process->pid);
                         enqueue(highPriorityQueue, process);
                     break;
                 }
