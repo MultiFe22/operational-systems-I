@@ -1,5 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "queue.h"
+#include "process.h"
+
 
 Queue* createQueue(int max) 
 {
