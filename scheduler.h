@@ -45,6 +45,7 @@ Process* dequeueNextCPUProcess();
 Process* dequeueNextIOProcess();
 void finishProgram();
 void init();
-void printProcessesData();
+void printInitialData();
+void printFinalData();
 
 #endif

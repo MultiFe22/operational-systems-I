@@ -10,12 +10,14 @@ int main(int argc, char const *argv[])
 {
     init();
 
-    printProcessesData();
+    printInitialData();
 
     while(completedProcesses < MAX_PROCESSES)
     {
         onClockTick(processes);
     }
+
+    printFinalData();
 
     finishProgram();
 
@@ -24,8 +26,6 @@ int main(int argc, char const *argv[])
 
 void finishProgram()
 {
-    printf("All processes are complete\n");
-
     freeQueue(highPriorityQueue);
     freeQueue(lowPriorityQueue);
     freeQueue(ioQueue);
@@ -51,12 +51,24 @@ void init()
     sortProcessesByArrivalTimeAsc(processes, MAX_PROCESSES);
 }
 
-void printProcessesData()
+void printInitialData()
 {
     printf("%-12s%-12s%-12s%-12s%-12s%-12s\n", "PID", "ArrivalTime", "BurstTime", "EnterIOTime", "IOTime", "IOType");
     for (int i = 0; i < MAX_PROCESSES; i++)
     {
         printf("%-12d%-12d%-12d%-12d%-12d%-12d\n", processes[i]->pid, processes[i]->arrivalTime, processes[i]->burstTime, processes[i]->enterIOTime, processes[i]->ioTime, processes[i]->ioType);
+    }
+    printf("\n");
+}
+
+void printFinalData()
+{
+    printf("All processes are complete\n\n");
+
+    printf("%-16s%-16s%-16s%-16s%-16s%-16s%-16s%-16s%-16s\n", "PID", "ArrivalTime", "EnterIOTime", "ExitTime", "TurnaroundTime", "BurstTime", "WaitTime", "IOTime", "IOType");
+    for (int i = 0; i < MAX_PROCESSES; i++)
+    {
+        printf("%-16d%-16d%-16d%-16d%-16d%-16d%-16d%-16d%-16d\n", processes[i]->pid, processes[i]->arrivalTime, processes[i]->enterIOTime, processes[i]->exitTime, processes[i]->turnaroundTime, processes[i]->burstTime, processes[i]->waitingTime, processes[i]->ioTime, processes[i]->ioType);
     }
 }
 
@@ -268,7 +280,7 @@ void tickProcess(Process* process)
             {
                 printf("Process %d completed execution\n", process->pid);
                 completedProcesses++;
-                process->exitTime = processorClock;
+                process->exitTime = processorClock + 1;
                 process->status = STATUS_Complete;
                 currentCPUProcess = NULL;
             }
