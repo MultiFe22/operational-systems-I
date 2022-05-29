@@ -70,8 +70,19 @@ Process* createProcess()
 
     p->arrivalTime = rand() % MAX_ARRIVAL_TIME;
     p->burstTime = rand() % MAX_BURST_TIME + 1;
-    p->ioTime = rand() % MAX_IO_TIME + 1;
-    p->enterIOTime = rand() % 100 > 50 ? rand() % p->burstTime : -1;
+    
+    if(p->burstTime == 1 || rand() % 100 > 50)
+    {
+        p->ioTime = 0;
+        p->enterIOTime = -1;
+    } 
+       
+    else
+    {
+        p->enterIOTime =  rand() % (p->burstTime-1) + 1;
+        p->ioTime = rand() % MAX_IO_TIME + 1;
+    }
+        
 
     p->ioType = rand() % 3;
 
