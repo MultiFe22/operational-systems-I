@@ -83,7 +83,7 @@ Process* createProcess()
     p->arrivalTime = rand() % MAX_ARRIVAL_TIME;
     p->burstTime = rand() % MAX_BURST_TIME + 1;
     
-    if(p->burstTime == 1 || rand() % 100 > 50)
+    if(p->burstTime == 1 || rand() % 100 < CHANCE_TO_NEED_IO)
     {
         p->ioTime = 0;
         p->enterIOTime = -1;

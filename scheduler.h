@@ -8,6 +8,7 @@
 #define MAX_ARRIVAL_TIME 10
 #define MAX_BURST_TIME 10
 #define MAX_IO_TIME 10
+#define CHANCE_TO_NEED_IO 50
 
 #define STATUS_NotArrived 0
 #define STATUS_InQueue 1
