@@ -182,7 +182,7 @@ void handleSlice()
     if(processorClock % sliceTime == 0)
     {
         printf("Process %d was interrupted\n", currentCPUProcess->pid);
-        printf("Process %d was enqueued with low priority\n", process->pid);
+        printf("Process %d was enqueued with low priority\n", currentCPUProcess->pid);
         enqueue(lowPriorityQueue, currentCPUProcess);
         currentCPUProcess->status = STATUS_InQueue;
         currentCPUProcess = NULL;
