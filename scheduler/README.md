@@ -2,7 +2,7 @@
 
 To compile the scheduler, run the following command:
 
-```gcc scheculer.c -o scheduler queue.c -Wall```
+```gcc scheduler.c -o scheduler queue.c -Wall```
 
 Then run the following command:
 
