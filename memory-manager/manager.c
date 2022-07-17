@@ -8,7 +8,7 @@
 #define FRAMES_PER_THREAD 4
 #define TOTAL_FRAMES 64
 
-#define UINT_MAX 4294967295
+#define INT_MAX 2147483647
 
 #define GRN   "\x1B[32m"
 #define YEL   "\x1B[33m"
@@ -57,7 +57,7 @@ int main()
         _frameDatas->thread = NULL;
     
     
-    for (int i = 0; i < UINT_MAX; i++)
+    for (int i = 0; i < INT_MAX; i++)
     {
         clearDisplay();
         handleNewProcess();
