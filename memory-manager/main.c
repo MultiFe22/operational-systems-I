@@ -9,6 +9,15 @@
 #define FRAMES_PER_THREAD 4
 #define TOTAL_FRAMES 64
 #define DELTA_TIME_MS 3000
+#define UINT_MAX 4294967295
+#define RED   "\x1B[31m"
+#define GRN   "\x1B[32m"
+#define YEL   "\x1B[33m"
+#define BLU   "\x1B[34m"
+#define MAG   "\x1B[35m"
+#define CYN   "\x1B[36m"
+#define WHT   "\x1B[37m"
+#define RESET "\x1B[0m"
 
 typedef struct _Thread
 {
@@ -51,7 +60,7 @@ int main()
         _frameDatas->thread = NULL;
     
     
-    for (int i = 0; i < MAX_THREADS; i++)
+    for (int i = 0; i < UINT_MAX; i++)
     {
         clearDisplay();
 
@@ -64,7 +73,9 @@ int main()
 
         printDisplay();
 
-        getchar();
+        char c = getchar();
+        if (c == 'q')
+            exit(0);
     }
 }
 
@@ -78,7 +89,7 @@ void printFrames()
 {
     printf("\n");
 
-    printf("Frames\t");
+    printf(MAG"Frames\t"RESET);
     for (int i = 0; i < TOTAL_FRAMES; i++)
     {
         printf("%-3d", i);
@@ -86,7 +97,7 @@ void printFrames()
 
     printf("\n");
 
-    printf("Thread\t");
+    printf(CYN"Thread\t"RESET);
     for (int i = 0; i < TOTAL_FRAMES; i++)
     {
         if(_frameDatas[i].thread == NULL)
@@ -102,9 +113,9 @@ void printPages()
 {
     for (int i = 0; i < _processCount; i++)
     {
-        printf("Thread %d Page Table\n", i);
+        printf("Thread "GRN"%d"RESET" Page Table\n", i);
 
-        printf("Page\t");
+        printf(MAG"Page\t"RESET);
 
         for (int j = 0; j < PAGES_PER_THREAD; j++)
         {
@@ -113,7 +124,7 @@ void printPages()
 
         printf("\n");
 
-        printf("Frame\t");
+        printf(CYN"Frame\t"RESET);
         for (int j = 0; j < PAGES_PER_THREAD; j++)
         {
             if(_threads[i].pageToFrame[j] < 0)
@@ -131,14 +142,16 @@ void printPages()
 
 void clearDisplay()
 {
-    system("cls");
+    // system("cls");
     system("clear");
 }
 
 
 void handleNewProcess()
 {
-    printf("New Process %d\n", _processCount);
+    if (_processCount >= MAX_THREADS)
+        return;
+    printf("New Process "BLU"%d"RESET"\n", _processCount);
     Thread* thread = &(_threads[_processCount]);
 
     thread->index = _processCount;
@@ -156,20 +169,24 @@ void handleNewProcess()
 
 void handleThread(int threadIndex)
 {
-    printf("(%d) ", threadIndex);
     Thread* thread = &(_threads[threadIndex]);
     
     int pageToAccess = getRandomPageIndex();
 
+    printf("Thread "GRN"%d"RESET" wants to access page "GRN"%d"RESET". ", threadIndex, pageToAccess);
+
     int frame = thread->pageToFrame[pageToAccess];
     
-
     if(frame < 0)
+    {
+        printf("Page fault! ");
         handlePageFault(thread, pageToAccess);
+    }
     else
     {
-        printf("Thread [%d] accessed frame [%d] \n", threadIndex, frame);
+        printf("Accessed frame [%d].", frame);
     }
+    printf("\n");
 }
 
 void handlePageFault(Thread* thread, int pageToAccess)
@@ -197,7 +214,7 @@ void handlePageFault(Thread* thread, int pageToAccess)
     FrameData* lruFrameData = &(_frameDatas[lru]);
     Thread* oldThread = lruFrameData->thread;
 
-    printf("Handling page fault at Thread %d with LRU = %d \n", thread->index, lru);
+    printf("Swapping to frame "GRN"%d"RESET"", lru);
 
     if(oldThread != NULL)
     {
