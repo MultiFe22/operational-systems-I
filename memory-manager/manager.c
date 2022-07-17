@@ -3,20 +3,17 @@
 #include <time.h>
 #include "queue.h"
 
-
 #define MAX_THREADS 20
 #define PAGES_PER_THREAD 50
 #define FRAMES_PER_THREAD 4
 #define TOTAL_FRAMES 64
-#define DELTA_TIME_MS 3000
+
 #define UINT_MAX 4294967295
-#define RED   "\x1B[31m"
+
 #define GRN   "\x1B[32m"
 #define YEL   "\x1B[33m"
-#define BLU   "\x1B[34m"
 #define MAG   "\x1B[35m"
 #define CYN   "\x1B[36m"
-#define WHT   "\x1B[37m"
 #define RESET "\x1B[0m"
 
 typedef struct _Thread
@@ -40,8 +37,8 @@ FrameData* _frameDatas;
 Queue* _globalFrameQueueLRU;
 
 void printDisplay();
-void printFrames();
-void printPages();
+void printMemory();
+void printThreads();
 void clearDisplay();
 void handleNewProcess();
 void handleThread(int threadIndex);
@@ -63,7 +60,6 @@ int main()
     for (int i = 0; i < UINT_MAX; i++)
     {
         clearDisplay();
-
         handleNewProcess();
         
         for (int i = 0; i < _processCount; i++)
@@ -81,13 +77,14 @@ int main()
 
 void printDisplay()
 {
-    printFrames();
-    printPages();
+    printMemory();
+    printThreads();
 }
 
-void printFrames()
+void printMemory()
 {
     printf("\n");
+    printf(GRN"Memory\n"RESET);
 
     printf(MAG"Frames\t"RESET);
     for (int i = 0; i < TOTAL_FRAMES; i++)
@@ -106,14 +103,25 @@ void printFrames()
             printf("%-3d", _frameDatas[i].thread->index);
     }
 
+    printf("\n");
+
+    printf(YEL "Fila\t" RESET);
+
+    QueuedProcess* process = _globalFrameQueueLRU->head;
+    while(process != NULL)
+    {
+        printf("%-3d", process->process);
+        process = process->prev;
+    }
+
     printf("\n\n\n");
 }
 
-void printPages()
+void printThreads()
 {
     for (int i = 0; i < _processCount; i++)
     {
-        printf("Thread "GRN"%d"RESET" Page Table\n", i);
+        printf(GRN"Thread %d\n"RESET, i);
 
         printf(MAG"Page\t"RESET);
 
@@ -132,6 +140,17 @@ void printPages()
             else
                 printf("%-3d", _threads[i].pageToFrame[j]);
         }
+        
+        printf("\n");
+
+        printf(YEL "Fila\t" RESET);
+
+        QueuedProcess* process = _threads[i].threadFrameQueueLRU->head;
+        while(process != NULL)
+        {
+            printf("%-3d", process->process);
+            process = process->prev;
+        }       
 
         printf("\n\n");
     }
@@ -142,7 +161,6 @@ void printPages()
 
 void clearDisplay()
 {
-    // system("cls");
     system("clear");
 }
 
@@ -151,7 +169,7 @@ void handleNewProcess()
 {
     if (_processCount >= MAX_THREADS)
         return;
-    printf("New Process "BLU"%d"RESET"\n", _processCount);
+    printf("New Process "GRN"%d"RESET"\n", _processCount);
     Thread* thread = &(_threads[_processCount]);
 
     thread->index = _processCount;
@@ -173,10 +191,9 @@ void handleThread(int threadIndex)
     
     int pageToAccess = getRandomPageIndex();
 
-    printf("Thread "GRN"%d"RESET" wants to access page "GRN"%d"RESET". ", threadIndex, pageToAccess);
+    printf(GRN"Process %d"RESET" wants to access page "GRN"%d"RESET". ", threadIndex, pageToAccess);
 
     int frame = thread->pageToFrame[pageToAccess];
-    
     if(frame < 0)
     {
         printf("Page fault! ");
@@ -184,7 +201,9 @@ void handleThread(int threadIndex)
     }
     else
     {
-        printf("Accessed frame [%d].", frame);
+        printf("Accessed frame " GRN "%d" RESET, frame);
+        enqueue(_globalFrameQueueLRU, frame);
+        enqueue(thread->threadFrameQueueLRU, frame);
     }
     printf("\n");
 }
@@ -192,7 +211,7 @@ void handleThread(int threadIndex)
 void handlePageFault(Thread* thread, int pageToAccess)
 {
     int lru = -1;
-    if(thread->frameCount >= 4)
+    if(thread->frameCount >= FRAMES_PER_THREAD)
     {
         lru = dequeue(thread->threadFrameQueueLRU);
     }
@@ -220,6 +239,7 @@ void handlePageFault(Thread* thread, int pageToAccess)
     {
         oldThread->pageToFrame[lruFrameData->pageInThread] = -1;
         oldThread->frameCount--;
+        removeFromQueue(oldThread->threadFrameQueueLRU, lru);
     }
 
     lruFrameData->thread = thread;
@@ -227,8 +247,6 @@ void handlePageFault(Thread* thread, int pageToAccess)
 
     thread->pageToFrame[pageToAccess] = lru;
     thread->frameCount++;
-
-    clearValueInQueue(_globalFrameQueueLRU, lru);
     
     enqueue(_globalFrameQueueLRU, lru);
     enqueue(thread->threadFrameQueueLRU, lru);

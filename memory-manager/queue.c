@@ -30,6 +30,8 @@ int enqueue(Queue* queue, int process)
     if (queue->size >= queue->max)
         return 0;
 
+    removeFromQueue(queue, process);
+
     QueuedProcess* item = (QueuedProcess*) malloc(sizeof(QueuedProcess));
 
     item->process = process;
@@ -88,32 +90,31 @@ int isEmpty(Queue* queue)
     return 0;
 }
 
-void clearValueInQueue(Queue* queue, int value)
+void removeFromQueue(Queue* queue, int value)
 {
-    QueuedProcess* process = queue->head;
-    if(process == NULL)
-        return;
-        
-    if(process->process == value)
-    {
-        queue->head = process->prev;
-        free(process);
-        queue->size--;
-        return;
-    }
+    QueuedProcess* item = queue->head;
+    QueuedProcess* last = item;
 
-    while(process->prev != NULL)
+    while(item != NULL)
     {
-        if(process->prev->process == value)
+        if(item->process == value)
         {
-            QueuedProcess* dupe = process->prev;
-            process->prev = process->prev->prev;
-            free(dupe);
-            queue->size--;
-            return;
-        }
-        
-        process = process->prev;
-    }
+            if(item == queue->head)
+            {
+                queue->head = item->prev;
+            }
 
+            if(item == queue->tail)
+            {
+                queue->tail = last;
+            }
+
+            last->prev = item->prev;
+
+            queue->size--;
+        }
+
+        last = item;
+        item = item->prev;
+    }
 }

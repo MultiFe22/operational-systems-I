@@ -20,7 +20,6 @@
     int enqueue(Queue *queue, int item);
     int dequeue(Queue *queue);
     int isEmpty(Queue* queue);
-    void clearValueInQueue(Queue *queue, int value);
-    //QueuedProcess* dequeueInternal(Queue* queue) ;
+    void removeFromQueue(Queue *queue, int value);
 
 #endif
